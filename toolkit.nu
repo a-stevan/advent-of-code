@@ -116,7 +116,12 @@ export def "init ocaml" [year: int, day: int]: nothing -> nothing {
 }
 
 export def "run ocaml" [code: closure, --year: int]: nothing -> nothing {
-    for day in (ls ("solutions" | path join ($year | into string) "ocaml" "*") | get name) {
+    let days = "solutions"
+        | path join ($year | into string) "ocaml" "*"
+        | into glob
+        | ls $in
+        | get name
+    for day in $days {
         do {
             cd $day
             print $day
