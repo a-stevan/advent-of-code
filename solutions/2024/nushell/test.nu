@@ -4,6 +4,7 @@ def main [--json]: [ nothing -> string ] {
         | into glob
         | ls $in
         | get name
+        | where $it != ($env.FILE_PWD | path join test.nu)
         | wrap path
         | insert day { |it|
             $it.path | path dirname | path basename | split row '_' | get 1 | into int
