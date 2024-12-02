@@ -1,3 +1,4 @@
+# NOTE: can't define `parse` as a module in `mod.nu` smh...
 use parse.nu
 
 export def main [input: path]: [ nothing -> int ] {
