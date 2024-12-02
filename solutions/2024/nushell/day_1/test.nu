@@ -1,9 +1,36 @@
 use .
 
-[
-    [a, b, c];
-    [ example,  silver, ((day_1 silver data/2024/day_1/input.txt) == (open data/2024/day_1/silver.txt | into int)) ],
-    [ example,  gold,   ((day_1 gold data/2024/day_1/input.txt) == (open data/2024/day_1/gold.txt | into int)) ],
-    [ a-stevan, silver, ((day_1 silver data/2024/day_1/a-stevan/input.txt) == (open data/2024/day_1/a-stevan/silver.txt | into int)) ],
-    [ a-stevan, gold,   ((day_1 gold data/2024/day_1/a-stevan/input.txt) == (open data/2024/day_1/a-stevan/gold.txt | into int)) ],
+const DIR = "data/2024/day_1"
+
+def "path resolve" [user: string, x: string]: [ nothing -> path ] {
+    $DIR | path join $user $"($x).txt"
+}
+
+const TESTS = [
+    [ user, level ];
+
+    [ '',  silver ],
+    [ '',  gold ],
+    [ a-stevan, silver ],
+    [ a-stevan, gold ],
 ]
+
+def main [--json] {
+    let res = $TESTS | insert status { |test|
+        let input = path resolve $test.user input
+        let expected = path resolve $test.user $test.level | open $in | into int
+        let actual = match $test.level {
+            "silver" => { day_1 silver $input },
+            "gold" => { day_1 gold $input },
+            _ => { print $"could not run ($test)" },
+        }
+
+        $actual == $expected
+    }
+
+    if $json {
+        $res | to json
+    } else {
+        print $res
+    }
+}
