@@ -11,6 +11,7 @@ Otherwise, enjoy my solutions :wink:
 ## The list of events
 | year                                  | OCaml                        | Nushell                                                                       | Oberon                                                                 |
 | ------------------------------------- | ---------------------------- | ----------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| [2024](https://adventofcode.com/2022) |                              | [here](https://github.com/a-stevan/advent-of-code/tree/2024/solutions/nushell) |                                                                        |
 | [2023](https://adventofcode.com/2023) | [here](solutions/2023/ocaml) |                                                                               |                                                                        |
 | [2022](https://adventofcode.com/2022) |                              | [here](https://github.com/amtoine/advent-of-code/tree/2022/solutions/nushell) |                                                                        |
 | [2021](https://adventofcode.com/2021) |                              |                                                                               | [here](https://github.com/amtoine/advent-of-code/tree/2021/challenges) |
