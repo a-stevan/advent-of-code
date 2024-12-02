@@ -1,12 +1,10 @@
-export def main [input: path]: [ nothing -> int ] {
-    let data = open $input
-        | detect columns --no-headers
-        | rename left right
-        | into int left right
-        | transpose -i
+use parse.nu
 
-    let left = $data | get 0 | values | sort
-    let right = $data | get 1 | values | sort
+export def main [input: path]: [ nothing -> int ] {
+    let data = parse $input
+
+    let left = $data.left | sort
+    let right = $data.right | sort
 
     $left
         | wrap left
