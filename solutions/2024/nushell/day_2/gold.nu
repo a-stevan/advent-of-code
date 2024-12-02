@@ -1,3 +1,4 @@
+# NOTE: can't define `parse` as a module in `mod.nu` smh...
 use parse.nu
 
 export def main [input: path]: [ nothing -> int ] {
@@ -21,14 +22,11 @@ export def main [input: path]: [ nothing -> int ] {
 
             $relaxed_reports | each { |report|
                 let foo = $report | zip ($report | skip 1) | each { $in.1 - $in.0 }
-                if $foo.0 == 0 {
-                    false
-                } else {
-                    let bound = $foo | math abs | all { $in >= 1 and $in <= 3 }
-                    let sign = $foo | skip 1 | all { $in * $foo.0 > 0 }
 
-                    $bound and $sign
-                }
+                let bound = $foo | math abs | all { $in >= 1 and $in <= 3 }
+                let sign = $foo | skip 1 | all { $in * $foo.0 > 0 }
+
+                $bound and $sign
             } | into int | math sum
         }
         | where $it > 0
