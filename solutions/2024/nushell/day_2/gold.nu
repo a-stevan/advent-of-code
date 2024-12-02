@@ -25,10 +25,10 @@ export def main [input: path]: [ nothing -> int ] {
             let relaxed_reports = seq 0 ($n - 1) | each { |i| $report | list reject $i }
 
             $relaxed_reports | each { |report|
-                let foo = $report | zip ($report | skip 1) | each { $in.1 - $in.0 }
+                let diffs = $report | zip ($report | skip 1) | each { $in.1 - $in.0 }
 
-                let bound = $foo | math abs | all { $in >= 1 and $in <= 3 }
-                let sign = $foo | skip 1 | all { $in * $foo.0 > 0 }
+                let bound = $diffs | math abs | all { $in >= 1 and $in <= 3 }
+                let sign = $diffs | skip 1 | all { $in * $diffs.0 > 0 }
 
                 $bound and $sign
             } | into int | math sum
