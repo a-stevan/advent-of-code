@@ -98,8 +98,8 @@ export def "aoc get-answers" [
         | get capture0
 
     {
-        silver: $answers.0?,
-        gold: $answers.1?,
+        silver: (if $answers.0? != null { $answers.0 | into int}),
+        gold: (if $answers.1? != null { $answers.1 | into int}),
     }
 }
 
