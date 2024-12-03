@@ -1,6 +1,7 @@
 # NOTE: can't define `parse` as a module in `mod.nu` smh...
 use parse.nu
 
+# deprecated
 def "list reject" [i: int]: [ list -> list ] {
     let n = $in | length
 
@@ -22,7 +23,7 @@ export def main [input: path]: [ nothing -> int ] {
         | each { |report|
             let n = $report | length
 
-            let relaxed_reports = seq 0 ($n - 1) | each { |i| $report | list reject $i }
+            let relaxed_reports = seq 0 ($n - 1) | each { |i| $report | drop nth $i }
 
             $relaxed_reports | each { |report|
                 let diffs = $report | zip ($report | skip 1) | each { $in.1 - $in.0 }
