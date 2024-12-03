@@ -32,6 +32,36 @@ export def "aoc get-data" [
     $res.body
 }
 
+export def "aoc get-answers" [
+    day: int,  # the day of the event
+    --year: int,  # the year to consider
+    --login: record<cookie: string, mail: string>,  # the credentials to AoC
+]: [ nothing -> record<silver: int, gold: int> ] {
+    let url = $'https://adventofcode.com/($year)/day/($day)'
+
+    let header = [
+        Cookie $'session=($login.cookie)'
+        User-Agent $'email: ($login.mail)'
+    ]
+
+    let res = http get --headers $header --full --allow-errors $url
+    if $res.status != 200 {
+        error make --unspanned {
+          msg: $res.body
+        }
+    }
+
+    let answers = $res.body
+        | lines
+        | parse --regex '.*Your puzzle answer was <code>(\d+)</code>.*'
+        | get capture0
+
+    {
+        silver: $answers.0?,
+        gold: $answers.1?,
+    }
+}
+
 # get the number of stars for each day of a given year for an authenticated user
 #
 # # Examples
