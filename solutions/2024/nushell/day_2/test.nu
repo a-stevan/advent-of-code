@@ -17,15 +17,27 @@ const TESTS = [
 
 def main [--json] {
     let res = $TESTS | insert status { |test|
-        let input = path resolve $test.user input
-        let expected = path resolve $test.user $test.level | open $in | into int
-        let actual = match $test.level {
-            "silver" => { day_2 silver $input },
-            "gold" => { day_2 gold $input },
-            _ => { print $"could not run ($test)" },
+        if $test.level not-in [ "silver", "gold" ] {
+            error make { msg: $"unknown level ($test.level)" }
         }
 
-        $actual == $expected
+        let input = path resolve $test.user input
+        let expected = path resolve $test.user $test.level | open $in | into int
+        let run = match $test.level {
+            "silver" => { { day_2 silver $input } },
+            "gold" => { { day_2 gold $input } },
+        }
+
+        try {
+            let actual = do $run
+            if $actual == $expected {
+                "pass"
+            } else {
+                "fail"
+            }
+        } catch { |e|
+            $e.msg
+        }
     }
 
     if $json {
