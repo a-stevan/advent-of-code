@@ -8,13 +8,15 @@ export def main []: [ string -> int ] {
 
     mut do = [true]
     for i in $res {
-        if $i.do {
-            $do = $do | append true
+        let new = if $i.do {
+            true
         } else if $i.dont {
-            $do = $do | append false
+            false
         } else {
-            $do = $do | append ($do | last)
+            $do | last
         }
+
+        $do = $do | append $new
     }
 
     $res | merge ($do | wrap x) | where x | each { $in.lhs * $in.rhs } | math sum
