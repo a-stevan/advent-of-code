@@ -6,18 +6,21 @@ export def main []: [ string -> int ] {
         | update do { not ($in | is-empty) }
         | update dont { not ($in | is-empty) }
 
-    mut do = [true]
-    for i in $res {
-        let new = if $i.do {
-            true
-        } else if $i.dont {
-            false
-        } else {
-            $do | last
+    let do = generate {|it|
+        if ($it.1 | is-empty) {
+            return
         }
 
-        $do = $do | append $new
-    }
+        let new = if $it.1.0.do {
+            true
+        } else if $it.1.0.dont {
+            false
+        } else {
+            $it.0
+        }
+
+        { out: $it.0, next: [$new, ($it.1 | skip 1)] }
+    } [ true, $res ]
 
     $res | merge ($do | wrap x) | where x | each { $in.lhs * $in.rhs } | math sum
 }
