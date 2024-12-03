@@ -33,7 +33,7 @@ def "http get-with-cooldown" [
     if not ($HTTP_TIMESTAMP_DIR | path exists) {
         mkdir $HTTP_TIMESTAMP_DIR
     }
-    date now | format date $DATE_FORMAT | $"($in)\n" | save --append $cache
+    $now | format date $DATE_FORMAT | $"($in)\n" | save --append $cache
 
     $res
 }
