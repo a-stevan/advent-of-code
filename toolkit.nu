@@ -1,4 +1,5 @@
 const HTTP_TIMESTAMP_DIR = $nu.home-path | path join ".local" "share" "http"
+const HTTP_REQUEST_CACHE_DIR = $nu.home-path | path join ".cache" "http"
 const AOC_API_COOLDOWN = 15min
 const DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
@@ -6,8 +7,10 @@ def "http get-with-cooldown" [
     url: string,
     --login: record<cookie: string, mail: string>,  # the HTTP request credentials
     --cooldown: duration,
+    --cache
 ]: [ nothing -> record<body: string, status: int> ] {
     let timestamps_file = $HTTP_TIMESTAMP_DIR | path join ($url | url encode --all)
+    let cache_file = $HTTP_REQUEST_CACHE_DIR | path join ($url | url encode --all)
 
     let now = date now
     let last_time = try { open $timestamps_file | lines | last | into datetime }
@@ -41,6 +44,13 @@ def "http get-with-cooldown" [
     }
     $now | format date $DATE_FORMAT | $in + "\n" | save --append $timestamps_file
 
+    if $cache {
+        if not ($HTTP_REQUEST_CACHE_DIR | path exists) {
+            mkdir $HTTP_REQUEST_CACHE_DIR
+        }
+        $res | to nuon | $in + "\n" | save --append $cache_file
+    }
+
     $res
 }
 
@@ -61,11 +71,12 @@ export def "aoc get-data" [
     --year: int,  # the year to consider
     --login: record<cookie: string, mail: string>,  # the credentials to AoC
     --force, # force the HTTP request, bypassing the AOC API cooldown
+    --cache, # store the response in a cache file
 ]: nothing -> string {
     let url = $'https://adventofcode.com/($year)/day/($day)/input'
 
     let cooldown = if $force { 0sec } else { $AOC_API_COOLDOWN }
-    let res = http get-with-cooldown $url --login $login --cooldown $cooldown
+    let res = http get-with-cooldown $url --login $login --cooldown $cooldown --cache=$cache
     $res.body
 }
 
@@ -74,11 +85,12 @@ export def "aoc get-answers" [
     --year: int,  # the year to consider
     --login: record<cookie: string, mail: string>,  # the credentials to AoC
     --force, # force the HTTP request, bypassing the AOC API cooldown
+    --cache, # store the response in a cache file
 ]: [ nothing -> record<silver: int, gold: int> ] {
     let url = $'https://adventofcode.com/($year)/day/($day)'
 
     let cooldown = if $force { 0sec } else { $AOC_API_COOLDOWN }
-    let res = http get-with-cooldown $url --login $login --cooldown $cooldown
+    let res = http get-with-cooldown $url --login $login --cooldown $cooldown --cache=$cache
 
     let answers = $res.body
         | lines
@@ -107,11 +119,12 @@ export def "aoc get-stars" [
     --year: int,  # the year to consider
     --login: record<cookie: string, mail: string>,  # the credentials to AoC
     --force, # force the HTTP request, bypassing the AOC API cooldown
+    --cache, # store the response in a cache file
 ]: nothing -> table<day: int, stars: int> {
     let url = $"https://adventofcode.com/($year)"
 
     let cooldown = if $force { 0sec } else { $AOC_API_COOLDOWN }
-    let res = http get-with-cooldown $url --login $login --cooldown $cooldown
+    let res = http get-with-cooldown $url --login $login --cooldown $cooldown --cache=$cache
 
     $res.body
         | lines
