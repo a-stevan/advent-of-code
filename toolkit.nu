@@ -14,7 +14,12 @@ def "http get-with-cooldown" [
     if $last_time != null and ($now - $last_time) < $cooldown {
         error make --unspanned {
             msg: $"(ansi red_bold)http_request_cooldown_error(ansi reset)\n cooldown for (ansi purple)($url)(ansi reset) is not over",
-            help: $"\n    - cooldown: (ansi green)($cooldown)(ansi reset)\n    - last request: (ansi yellow)($last_time | format date $DATE_FORMAT)(ansi reset)\n    - time since: (ansi red)($now - $last_time)(ansi reset)"
+            help: ([
+                "",
+                $"    - cooldown: (ansi green)($cooldown)(ansi reset)",
+                $"    - last request: (ansi yellow)($last_time | format date $DATE_FORMAT)(ansi reset)",
+                $"    - time since: (ansi red)($now - $last_time)(ansi reset)",
+            ] | str join "\n"),
         }
     }
 
