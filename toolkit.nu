@@ -1,4 +1,4 @@
-const HTTP_TIMESTAMP_DIR = $nu.home-path | path join ".local" "share" "nushell" "http"
+const HTTP_TIMESTAMP_DIR = $nu.home-path | path join ".local" "share" "http"
 const AOC_API_COOLDOWN = 15min
 const DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
@@ -7,9 +7,10 @@ def "http get-with-cooldown" [
     --login: record<cookie: string, mail: string>,  # the HTTP request credentials
     --cooldown: duration,
 ]: [ nothing -> record<body: string, status: int> ] {
-    let cache = $HTTP_TIMESTAMP_DIR | path join ($url | url encode --all)
+    let timestamps_file = $HTTP_TIMESTAMP_DIR | path join ($url | url encode --all)
+
     let now = date now
-    let last_time = $cache | try { open $in | lines | last | into datetime }
+    let last_time = try { open $timestamps_file | lines | last | into datetime }
 
     if $last_time != null and ($now - $last_time) < $cooldown {
         error make --unspanned {
@@ -38,7 +39,7 @@ def "http get-with-cooldown" [
     if not ($HTTP_TIMESTAMP_DIR | path exists) {
         mkdir $HTTP_TIMESTAMP_DIR
     }
-    $now | format date $DATE_FORMAT | $"($in)\n" | save --append $cache
+    $now | format date $DATE_FORMAT | $in + "\n" | save --append $timestamps_file
 
     $res
 }
