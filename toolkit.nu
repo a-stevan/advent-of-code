@@ -1,3 +1,39 @@
+const HTTP_TIMESTAMP_DIR = $nu.home-path | path join ".local" "share" "nushell" "http"
+const AOC_API_COOLDOWN = 15min
+
+def "http get-with-cooldown" [
+    url: string,
+    --login: record<cookie: string, mail: string>,  # the HTTP request credentials
+    --cooldown: duration,
+]: [ nothing -> record<body: string, status: int> ] {
+    let cache = $HTTP_TIMESTAMP_DIR | path join ($url | url encode --all)
+    let now = date now
+    let last_time = $cache | try { open $in | lines | last | into datetime }
+
+    if $last_time != null and ($now - $last_time) < $cooldown {
+        error make --unspanned { msg: "cooldown" }
+    }
+
+    let header = [
+        Cookie $'session=($login.cookie)'
+        User-Agent $'email: ($login.mail)'
+    ]
+
+    let res = http get --headers $header --full --allow-errors $url
+    if $res.status != 200 {
+        error make --unspanned {
+          msg: $res.body
+        }
+    }
+
+    if not ($HTTP_TIMESTAMP_DIR | path exists) {
+        mkdir $HTTP_TIMESTAMP_DIR
+    }
+    date now | format date "%Y-%m-%d %H:%M:%S" | $"($in)\n" | save --append $cache
+
+    $res
+}
+
 # get the data of the day for an authenticated user
 #
 # # Examples
@@ -14,21 +50,12 @@ export def "aoc get-data" [
     day: int,  # the day of the event
     --year: int,  # the year to consider
     --login: record<cookie: string, mail: string>,  # the credentials to AoC
+    --force, # force the HTTP request, bypassing the AOC API cooldown
 ]: nothing -> string {
     let url = $'https://adventofcode.com/($year)/day/($day)/input'
 
-    let header = [
-        Cookie $'session=($login.cookie)'
-        User-Agent $'email: ($login.mail)'
-    ]
-
-    let res = http get --headers $header --full --allow-errors $url
-    if $res.status != 200 {
-        error make --unspanned {
-          msg: $res.body
-        }
-    }
-
+    let cooldown = if $force { 0sec } else { $AOC_API_COOLDOWN }
+    let res = http get-with-cooldown $url --login $login --cooldown $cooldown
     $res.body
 }
 
@@ -36,20 +63,12 @@ export def "aoc get-answers" [
     day: int,  # the day of the event
     --year: int,  # the year to consider
     --login: record<cookie: string, mail: string>,  # the credentials to AoC
+    --force, # force the HTTP request, bypassing the AOC API cooldown
 ]: [ nothing -> record<silver: int, gold: int> ] {
     let url = $'https://adventofcode.com/($year)/day/($day)'
 
-    let header = [
-        Cookie $'session=($login.cookie)'
-        User-Agent $'email: ($login.mail)'
-    ]
-
-    let res = http get --headers $header --full --allow-errors $url
-    if $res.status != 200 {
-        error make --unspanned {
-          msg: $res.body
-        }
-    }
+    let cooldown = if $force { 0sec } else { $AOC_API_COOLDOWN }
+    let res = http get-with-cooldown $url --login $login --cooldown $cooldown
 
     let answers = $res.body
         | lines
@@ -77,20 +96,12 @@ export def "aoc get-answers" [
 export def "aoc get-stars" [
     --year: int,  # the year to consider
     --login: record<cookie: string, mail: string>,  # the credentials to AoC
+    --force, # force the HTTP request, bypassing the AOC API cooldown
 ]: nothing -> table<day: int, stars: int> {
     let url = $"https://adventofcode.com/($year)"
 
-    let header = [
-        Cookie $'session=($login.cookie)'
-        User-Agent $'email: ($login.mail)'
-    ]
-
-    let res = http get --headers $header --full --allow-errors $url
-    if $res.status != 200 {
-        error make --unspanned {
-          msg: $res.body
-        }
-    }
+    let cooldown = if $force { 0sec } else { $AOC_API_COOLDOWN }
+    let res = http get-with-cooldown $url --login $login --cooldown $cooldown
 
     $res.body
         | lines
