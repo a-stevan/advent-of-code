@@ -49,9 +49,20 @@ gpg --symmetric --armor --cipher-algo <algo> <file>
 ```
 to have it available as a `.asc` file.
 
-### fetch the data
+### test a day's solutions from the AoC API
 with Nushell,
 ```nushell
 use toolkit.nu
-toolkit aoc get-data --help
+use solutions/2024/nushell/day_3
+use std assert
+
+let login = {
+    cookie: "xxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    mail: "xxxx@xxx.xxx"
+}
+
+let input = toolkit aoc get-data --year 2024 --login $login 3 --cache
+let answers = toolkit aoc get-answers --year 2024 --login $login 3 --cache
+
+assert equal ($input | day_3 gold) $answers.gold
 ```
