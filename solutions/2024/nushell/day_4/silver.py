@@ -1,9 +1,7 @@
 import sys
 
 input = sys.argv[1]
-grid = list(map(list, input.split("\n")))
-
-print(grid)
+grid = list(map(list, input.strip().split("\n")))
 
 n, m = len(grid), len(grid[0])
 
