@@ -76,11 +76,11 @@ let login = {
 }
 let inputs = 1..5 | each { |d|
     print --no-newline $"pulling inputs: ($d)\r"
-    tk aoc get-data --login $login --year 2024 $d --force
+    toolkit aoc get-data --login $login --year 2024 $d
 }
 let answers = 1..5 | each { |d|
     print --no-newline $"pulling answers: ($d)\r"
-    tk aoc get-answers --login $login --year 2024 $d --force
+    toolkit aoc get-answers --login $login --year 2024 $d
 }
 
 # NOTE: ommitting day 4 because the solution is way too slow...
