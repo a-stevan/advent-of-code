@@ -3,47 +3,44 @@ export def main []: [ string -> int ] {
     let n = $grid | length
     let m = $grid.0 | length
 
-    mut candidates = []
-
-    # horizontal
-    print "horiz"
-    for i in (seq 0 ($n - 1)) {
-        print --no-newline $"($i)\r"
-        for j in (seq 0 ($m - 4)) {
-            $candidates ++= [ (seq 0 3 | each { |dj| [$i, ($j + $dj)] }) ]
+    let horiz = seq 0 ($n - 1) | each { |i|
+        print --no-newline $"horiz: ($i + 1) / ($n)\r"
+        seq 0 ($m - 4) | each { |j|
+            seq 0 3 | each { |dj| [$i, ($j + $dj)] }
         }
-    }
+    } | flatten
+    print ''
 
-    # vertical
-    print "vert"
-    for i in (seq 0 ($n - 4)) {
-        for j in (seq 0 ($m - 1)) {
-            $candidates ++= [ (seq 0 3 | each { |di| [($i + $di), $j] }) ] }
-    }
-
-    # diag
-    print "diag"
-    for i in (seq 0 ($n - 4)) {
-        for j in (seq 0 ($m - 4)) {
-            $candidates ++= [ (seq 0 3 | each { |d| [($i + $d), ($j + $d)] }) ]
+    let vert = seq 0 ($n - 4) | each { |i|
+        print --no-newline $"vert: ($i + 1) / ($n - 3)\r"
+        seq 0 ($m - 1) | each { |j|
+            seq 0 3 | each { |di| [($i + $di), $j] }
         }
-    }
-    print "diag"
-    for i in (seq 0 ($n - 4)) {
-        for j in (seq 3 ($m - 1)) {
-            $candidates ++= [ (seq 0 3 | each { |d| [($i + $d), ($j - $d)] }) ]
+    } | flatten
+    print ''
+
+    let diag_1 = seq 0 ($n - 4) | each { |i|
+        print --no-newline $"diag_1: ($i + 1) / ($n - 3)\r"
+        seq 0 ($m - 4) | each { |j|
+            seq 0 3 | each { |d| [($i + $d), ($j + $d)] }
         }
-    }
+    } | flatten
+    print ''
 
-    $candidates = $candidates | uniq
-
-    mut count = 0
-    for c in $candidates {
-        let four = $c | each { |p| $grid | get $p.0 | get $p.1 } | str join ''
-        if $four == "XMAS" or $four == "SAMX" {
-            $count += 1
+    let diag_2 = seq 0 ($n - 4) | each { |i|
+        print --no-newline $"diag_2: ($i) / ($n - 3)\r"
+        seq 3 ($m - 1) | each { |j|
+            seq 0 3 | each { |d| [($i + $d), ($j - $d)] }
         }
-    }
+    } | flatten
+    print ''
 
-    return $count
+    let candidates = $horiz ++ $vert ++ $diag_1 ++ $diag_2
+    let nb_candidates = $candidates | length
+
+    $candidates | enumerate | where { |c|
+        print --no-newline $"candidates: ($c.index) / ($nb_candidates)\r"
+        let four = $c.item | each { |p| $grid | get $p.0 | get $p.1 } | str join ''
+        $four == "XMAS" or $four == "SAMX"
+    } | math sum
 }
