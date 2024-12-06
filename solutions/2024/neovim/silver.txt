@@ -1,0 +1,1 @@
+gg0f GwhdGDGopV}:sortggV}k:sort}jGDggA p}VGd:%s/\(\d\+\)\s\+\(\d\+\)/print(math.abs(\1 - \2)):%!lua:%s/\n/ + $xxxIprint(A):.!lua
