@@ -49,22 +49,47 @@ gpg --symmetric --armor --cipher-algo <algo> <file>
 ```
 to have it available as a `.asc` file.
 
-### test a day's solutions from the AoC API
+### test solutions with the AoC API
 with Nushell,
 ```nushell
 use toolkit.nu
-use solutions/2024/nushell/day_3
 use std assert
+
+use solutions/2024/nushell/day_1
+use solutions/2024/nushell/day_2
+use solutions/2024/nushell/day_3
+use solutions/2024/nushell/day_4
+use solutions/2024/nushell/day_5
+let sols = [
+    [ silver, gold ];
+
+    [ { day_1 silver }, { day_1 gold } ],
+    [ { day_2 silver }, { day_2 gold } ],
+    [ { day_3 silver }, { day_3 gold } ],
+    [ { day_4 silver }, { day_4 gold } ],
+    [ { day_5 silver }, { day_5 gold } ],
+]
 
 let login = {
     cookie: "xxxxxxxxxxxxxxxxxxxxxxxxxxxx"
     mail: "xxxx@xxx.xxx"
 }
+let inputs = 1..5 | each { |d|
+    print --no-newline $"pulling inputs: ($d)\r"
+    tk aoc get-data --login $login --year 2024 $d --force
+}
+let answers = 1..5 | each { |d|
+    print --no-newline $"pulling answers: ($d)\r"
+    tk aoc get-answers --login $login --year 2024 $d --force
+}
 
-let input = toolkit aoc get-data --year 2024 --login $login 3 --cache
-let answers = toolkit aoc get-answers --year 2024 --login $login 3 --cache
-
-assert equal ($input | day_3 gold) $answers.gold
+# NOTE: ommitting day 4 because the solution is way too slow...
+for day in ($inputs | wrap input | merge ($answers | wrap answers) | merge ($sols | wrap sol) | drop nth 3) {
+    assert equal ($day.input | do $day.sol.silver) $day.answers.silver
+    if $day.answers.gold != null {
+        assert equal ($day.input | do $day.sol.gold) $day.answers.gold
+    }
+}
 ```
 
 > **Note**
