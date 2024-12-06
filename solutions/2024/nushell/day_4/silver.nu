@@ -42,5 +42,5 @@ export def main []: [ string -> int ] {
         print --no-newline $"candidates: ($c.index) / ($nb_candidates)\r"
         let four = $c.item | each { |p| $grid | get $p.0 | get $p.1 } | str join ''
         $four == "XMAS" or $four == "SAMX"
-    } | math sum
+    } | length
 }
