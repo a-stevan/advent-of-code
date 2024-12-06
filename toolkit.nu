@@ -48,7 +48,7 @@ def "http get-with-cooldown" [
         if not ($HTTP_REQUEST_CACHE_DIR | path exists) {
             mkdir $HTTP_REQUEST_CACHE_DIR
         }
-        $res | to nuon | $in + "\n" | save --append $cache_file
+        $res | to nuon | str replace --all "\n" '\n' | $in + "\n" | save --append $cache_file
     }
 
     $res
