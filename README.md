@@ -66,3 +66,10 @@ let answers = toolkit aoc get-answers --year 2024 --login $login 3 --cache
 
 assert equal ($input | day_3 gold) $answers.gold
 ```
+
+> **Note**
+>
+> if the cookie has been encrypted, you can use
+> ```nushell
+> gpg --decrypt --armor <file> | from nuon
+> ```
