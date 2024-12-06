@@ -16,8 +16,8 @@ def "list reject" [i: int]: [ list -> list ] {
     $left ++ $right | take ($n - 1) # NOTE: strange that this is required
 }
 
-export def main [input: path]: [ nothing -> int ] {
-    let data = parse $input
+export def main []: [ string -> int ] {
+    let data = $in | parse
 
     $data
         | each { |report|

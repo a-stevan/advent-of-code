@@ -1,8 +1,8 @@
 # NOTE: can't define `parse` as a module in `mod.nu` smh...
 use parse.nu
 
-export def main [input: path]: [ nothing -> int ] {
-    let data = parse $input
+export def main []: [ string -> int ] {
+    let data = $in | parse
 
     let foo: table = $data.right | uniq -c | into string value
     let occ = $foo | transpose -r | into record

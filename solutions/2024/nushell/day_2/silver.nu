@@ -1,8 +1,8 @@
 # NOTE: can't define `parse` as a module in `mod.nu` smh...
 use parse.nu
 
-export def main [input: path]: [ nothing -> int ] {
-    let data = parse $input
+export def main []: [ string -> int ] {
+    let data = $in | parse
 
     let foo: list<int> = $data | each { |report|
         let diffs = $report | zip ($report | skip 1) | each { $in.1 - $in.0 }

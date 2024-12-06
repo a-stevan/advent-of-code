@@ -1,5 +1,5 @@
-export def main [input: path]: [ nothing -> record<left: list<int>, right: list<int>> ] {
-    let data = open $input
+export def main []: [ string -> record<left: list<int>, right: list<int>> ] {
+    let data = $in
         | detect columns --no-headers
         | rename left right
         | into int left right
