@@ -82,10 +82,12 @@ let inputs = $sols.day | enumerate | each { |d|
     print --no-newline $"pulling inputs: day ($d.item) \(($d.index + 1) / ($sols | length)\)\r"
     toolkit aoc get-data --login $login --year 2024 $d.item
 }
+print ""
 let answers = $sols.day | enumerate | each { |d|
     print --no-newline $"pulling answers: day ($d.item) \(($d.index + 1) / ($sols | length)\)\r"
     toolkit aoc get-answers --login $login --year 2024 $d.item
 }
+print ""
 
 def timeit [code: closure, ...args: any]: [ any -> record<res: any, time: duration> ] {
     let start_time = date now
@@ -100,7 +102,7 @@ let benchmarks = $inputs
     | merge ($answers | wrap answers)
     | merge ($sols | wrap sol)
     | each { |day|
-        print --no-newline $"running day ($day.sol.day) part silver... "
+        print $"running day ($day.sol.day) part silver..."
         let silver = try {
             let res = $day.input | timeit $day.sol.silver
             let status = if $res.res == $day.answers.silver {
@@ -112,10 +114,9 @@ let benchmarks = $inputs
         } catch { |e|
             { status: $e.msg, time: null }
         } | merge { day: $day.sol.day, part: "silver" }
-        print $"done in ($silver.time)"
 
         if $day.answers.gold != null {
-            print --no-newline $"running day ($day.sol.day) part gold... "
+            print $"running day ($day.sol.day) part gold... "
             let gold = try {
                 let res = $day.input | timeit $day.sol.silver
                 let status = if $res.res == $day.answers.silver {
@@ -127,7 +128,6 @@ let benchmarks = $inputs
             } catch { |e|
                 { status: $e.msg, time: null }
             } | merge { day: $day.sol.day, part: "gold" }
-            print $"done in ($gold.time)"
             return [$silver, $gold]
         }
 
