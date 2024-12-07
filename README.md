@@ -142,3 +142,70 @@ let benchmarks = $inputs
 > ```nushell
 > gpg --decrypt --armor <file> | from nuon
 > ```
+
+#### results
+- Nushell install
+| .                  | .                                   |
+| ------------------ | ----------------------------------- |
+| version            | 0.100.0                             |
+| major              | 0                                   |
+| minor              | 100                                 |
+| patch              | 0                                   |
+| branch             |                                     |
+| commit_hash        |                                     |
+| build_os           | linux-x86_64                        |
+| build_target       | x86_64-unknown-linux-gnu            |
+| rust_version       | rustc 1.80.1 (3f5fd8dd4 2024-08-06) |
+| rust_channel       | 1.80.1-x86_64-unknown-linux-gnu     |
+| cargo_version      | cargo 1.80.1 (376290515 2024-07-16) |
+| build_time         | 2024-11-20 19:27:39 +01:00          |
+| build_rust_channel | release                             |
+| allocator          | mimalloc                            |
+| features           | default, sqlite, trash              |
+- CPU spec
+| .                  | .                                        |
+| ------------------ | ---------------------------------------- |
+| Architecture       | x86_64                                   |
+| CPU(s)             | 8                                        |
+| Model name         | Intel(R) Core(TM) i5-8250U CPU @ 1.60GHz |
+| Thread(s) per core | 2                                        |
+| Core(s) per socket | 4                                        |
+| Socket(s)          | 1                                        |
+| CPU max MHz        | 3400.0000                                |
+| CPU min MHz        | 400.0000                                 |
+| BogoMIPS           | 3601.00                                  |
+| L1d cache          | 128 KiB (4 instances)                    |
+| L1i cache          | 128 KiB (4 instances)                    |
+| L2 cache           | 1 MiB (4 instances)                      |
+| L3 cache           | 6 MiB (1 instance)                       |
+> **Note**
+>
+> ```nushell
+> lscpu
+>     | lines
+>     | parse "{k}: {v}"
+>     | str trim
+>     | where k !~ "Vuln"
+>     | transpose --header-row
+>     | into record
+>     | select ...[
+>         "Architecture", "CPU(s)", "Model name", "Thread(s) per core",
+>         "Core(s) per socket", "Socket(s)", "CPU max MHz", "CPU min MHz",
+>         "BogoMIPS", "L1d cache", "L1i cache", "L2 cache", "L3 cache"
+>     ]
+> ```
+- the results
+| day | part   | status | time                          |
+| --- | ------ | ------ | ----------------------------- |
+| 1   | silver | pass   | 22ms 309µs 300ns             |
+| 1   | gold   | pass   | 55ms 566µs 231ns             |
+| 2   | silver | pass   | 498ms 416µs 227ns            |
+| 2   | gold   | pass   | 3sec 225ms 867µs 677ns       |
+| 3   | silver | pass   | 8ms 602µs 739ns              |
+| 3   | gold   | pass   | 66ms 649µs 439ns             |
+| 4   | silver | pass   | 5min 47sec 538ms 98µs 343ns  |
+| 4   | gold   | pass   | 2min 10sec 978ms 55µs 516ns  |
+| 5   | silver | pass   | 810ms 747µs 858ns            |
+| 6   | silver | pass   | 756ms 571µs 417ns            |
+| 6   | gold   | pass   | 33min 30sec 58ms 541µs 422ns |
+| 7   | silver | pass   | 1min 44sec 747ms 847µs 772ns |
