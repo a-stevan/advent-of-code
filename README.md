@@ -145,6 +145,7 @@ let benchmarks = $inputs
 
 #### results
 - Nushell install
+
 | .                  | .                                   |
 | ------------------ | ----------------------------------- |
 | version            | 0.100.0                             |
@@ -163,6 +164,7 @@ let benchmarks = $inputs
 | allocator          | mimalloc                            |
 | features           | default, sqlite, trash              |
 - CPU spec
+
 | .                  | .                                        |
 | ------------------ | ---------------------------------------- |
 | Architecture       | x86_64                                   |
@@ -195,6 +197,7 @@ let benchmarks = $inputs
 >     ]
 > ```
 - the results
+
 | day | part   | status | time                          |
 | --- | ------ | ------ | ----------------------------- |
 | 1   | silver | pass   | 22ms 309µs 300ns             |
