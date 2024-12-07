@@ -29,7 +29,7 @@ export def simulate-guard []: [
         grid: list<list<string>>,
         guard: record<x: int, y: int>,
         obstacles: table<x: int, y: int>,
-    > -> table<x: int, y: int, dx: int, dy: int>
+    > -> record<trail: table<x: int, y: int, dx: int, dy: int>, loop: bool>
 ] {
     let grid = $in.grid
     let h = $grid | length
@@ -69,7 +69,11 @@ export def simulate-guard []: [
         )
         $pos = $new
         let tmp: record<x: int, y: int> = { x: (-1 * $dir.y), y: $dir.x } # NOTE: required to avoid "type mismatch"
-        $trail = $trail | append ({ x: $new.x, y: $new.y, dx: $tmp.x, dy: $tmp.y })
+        let end = { x: $new.x, y: $new.y, dx: $tmp.x, dy: $tmp.y }
+        if $end in $trail {
+            return { trail: ($trail | append $end), loop: true }
+        }
+        $trail = $trail | append $end
         $dir = $tmp
     }
 
@@ -93,5 +97,5 @@ export def simulate-guard []: [
         } }
     )
 
-    $trail
+    { trail: $trail, loop: false }
 }
