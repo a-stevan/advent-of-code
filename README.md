@@ -68,10 +68,10 @@ let sols = [
     [ 1, { day_1 silver }, { day_1 gold } ],
     [ 2, { day_2 silver }, { day_2 gold } ],
     [ 3, { day_3 silver }, { day_3 gold } ],
-    # [ 4, { day_4 silver }, { day_4 gold } ],
+    [ 4, { day_4 silver }, { day_4 gold } ],
     [ 5, { day_5 silver }, { day_5 gold } ],
-    # [ 6, { day_6 silver }, { day_6 gold } ],
-    # [ 7, { day_7 silver }, { day_7 gold } ],
+    [ 6, { day_6 silver }, { day_6 gold } ],
+    [ 7, { day_7 silver }, { day_7 gold } ],
 ]
 
 let login = {
@@ -118,8 +118,8 @@ let benchmarks = $inputs
         if $day.answers.gold != null {
             print $"running day ($day.sol.day) part gold... "
             let gold = try {
-                let res = $day.input | timeit $day.sol.silver
-                let status = if $res.res == $day.answers.silver {
+                let res = $day.input | timeit $day.sol.gold
+                let status = if $res.res == $day.answers.gold {
                     "pass"
                 } else {
                     "fail"
