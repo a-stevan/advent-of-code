@@ -29,7 +29,7 @@ export def simulate-guard []: [
         grid: list<list<string>>,
         guard: record<x: int, y: int>,
         obstacles: table<x: int, y: int>,
-    > -> table<x: int, y: int>
+    > -> table<x: int, y: int, dx: int, dy: int>
 ] {
     let grid = $in.grid
     let h = $grid | length
@@ -40,7 +40,7 @@ export def simulate-guard []: [
 
     mut dir = { x: 0, y: -1 }
     mut pos = $guard
-    mut trail = [ $pos ]
+    mut trail = [ { x: $pos.x, y: $pos.y, dx: $dir.x, dy: $dir.y } ]
     while true {
         let in_sight = if $dir.x == 1 {
             $obstacles | where $it.y == $pos.y and $it.x > $pos.x | sort-by x
@@ -58,13 +58,18 @@ export def simulate-guard []: [
 
         let new = $in_sight.0 | { x: ($in.x + $dir.x * -1), y: ($in.y + $dir.y * -1) }
         let tmp = { pos: $pos, dir: $dir } # NOTE: required to avoid "capture of mutable variables"
+        let partial_trail_length = $pos.x - $new.x + $pos.y - $new.y | math abs
         $trail = $trail | append (
-            seq 1 ($pos.x - $new.x + $pos.y - $new.y | math abs) | each { |i|
-                { x: ($tmp.pos.x + $tmp.dir.x * $i), y: ($tmp.pos.y + $tmp.dir.y * $i) }
-            }
+            seq 1 ($partial_trail_length - 1) | each { |i| {
+                x: ($tmp.pos.x + $tmp.dir.x * $i),
+                y: ($tmp.pos.y + $tmp.dir.y * $i),
+                dx: $tmp.dir.x,
+                dy: $tmp.dir.y,
+            } }
         )
         $pos = $new
         let tmp: record<x: int, y: int> = { x: (-1 * $dir.y), y: $dir.x } # NOTE: required to avoid "type mismatch"
+        $trail = $trail | append ({ x: $new.x, y: $new.y, dx: $tmp.x, dy: $tmp.y })
         $dir = $tmp
     }
 
@@ -78,10 +83,14 @@ export def simulate-guard []: [
         { x: $pos.x, y: 0 }
     }
     let tmp = { pos: $pos, dir: $dir } # NOTE: required to avoid "capture of mutable variables"
+    let partial_trail_length = $pos.x - $border.x + $pos.y - $border.y | math abs
     $trail = $trail | append (
-        seq 1 ($pos.x - $border.x + $pos.y - $border.y | math abs) | each { |i|
-            { x: ($tmp.pos.x + $tmp.dir.x * $i), y: ($tmp.pos.y + $tmp.dir.y * $i) }
-        }
+        seq 1 $partial_trail_length | each { |i| {
+            x: ($tmp.pos.x + $tmp.dir.x * $i),
+            y: ($tmp.pos.y + $tmp.dir.y * $i),
+            dx: $tmp.dir.x,
+            dy: $tmp.dir.y,
+        } }
     )
 
     $trail
