@@ -198,12 +198,15 @@ let benchmarks = $inputs
 > ```
 - the results
 
-| day | silver         | $t_{\text{silver}}$ | gold            | $t_{\text{gold}}$       |
-| --- | -------------- | ------------------- | --------------- | ----------------------- |
-| 1   | :green_circle: | 16ms 70µs 463ns    | :green_circle:  | 31ms 902µs 302ns       |
-| 2   | :green_circle: | 350ms 825µs 307ns  | :green_circle:  | 2sec 394ms 879µs 736ns |
-| 3   | :green_circle: | 4ms 929µs 133ns    | :green_circle:  | 36ms 600µs 200ns       |
-| 5   | :green_circle: | 564ms 618µs 375ns  | :orange_circle: |                         |
+| day | silver         | $t_{\text{silver}}$           | gold            | $t_{\text{gold}}$             |
+| --- | -------------- | ----------------------------- | --------------- | ----------------------------- |
+| 1   | :green_circle: | 22ms 309µs 300ns             | :green_circle:  | 55ms 566µs 231ns             |
+| 2   | :green_circle: | 498ms 416µs 227ns            | :green_circle:  | 3sec 225ms 867µs 677ns       |
+| 3   | :green_circle: | 8ms 602µs 739ns              | :green_circle:  | 66ms 649µs 439ns             |
+| 4   | :green_circle: | 5min 47sec 538ms 98µs 343ns  | :green_circle:  | 2min 10sec 978ms 55µs 516ns  |
+| 5   | :green_circle: | 810ms 747µs 858ns            | :orange_circle: |                               |
+| 6   | :green_circle: | 756ms 571µs 417ns            | :green_circle:  | 33min 30sec 58ms 541µs 422ns |
+| 7   | :green_circle: | 1min 44sec 747ms 847µs 772ns | :orange_circle: |                               |
 
 > **Note**
 >
