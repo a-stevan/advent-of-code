@@ -198,17 +198,35 @@ let benchmarks = $inputs
 > ```
 - the results
 
-| day | part   | status | time                          |
-| --- | ------ | ------ | ----------------------------- |
-| 1   | silver | pass   | 22ms 309µs 300ns             |
-| 1   | gold   | pass   | 55ms 566µs 231ns             |
-| 2   | silver | pass   | 498ms 416µs 227ns            |
-| 2   | gold   | pass   | 3sec 225ms 867µs 677ns       |
-| 3   | silver | pass   | 8ms 602µs 739ns              |
-| 3   | gold   | pass   | 66ms 649µs 439ns             |
-| 4   | silver | pass   | 5min 47sec 538ms 98µs 343ns  |
-| 4   | gold   | pass   | 2min 10sec 978ms 55µs 516ns  |
-| 5   | silver | pass   | 810ms 747µs 858ns            |
-| 6   | silver | pass   | 756ms 571µs 417ns            |
-| 6   | gold   | pass   | 33min 30sec 58ms 541µs 422ns |
-| 7   | silver | pass   | 1min 44sec 747ms 847µs 772ns |
+| day | silver         | $t_{\text{silver}}$ | gold            | $t_{\text{gold}}$       |
+| --- | -------------- | ------------------- | --------------- | ----------------------- |
+| 1   | :green_circle: | 16ms 70µs 463ns    | :green_circle:  | 31ms 902µs 302ns       |
+| 2   | :green_circle: | 350ms 825µs 307ns  | :green_circle:  | 2sec 394ms 879µs 736ns |
+| 3   | :green_circle: | 4ms 929µs 133ns    | :green_circle:  | 36ms 600µs 200ns       |
+| 5   | :green_circle: | 564ms 618µs 375ns  | :orange_circle: |                         |
+
+> **Note**
+>
+> to generate the table
+> ```nushell
+> $benchmarks
+>     | update silver {
+>         match $in {
+>             "pass" => ":green_circle:",
+>             "fail" => ":red_circle:",
+>             null => ":orange_circle:",
+>         }
+>     }
+>     | update gold {
+>         match $in {
+>             "pass" => ":green_circle:",
+>             "fail" => ":red_circle:",
+>             null => ":orange_circle:",
+>         }
+>     }
+>     | rename --column {
+>         "t_silver": '$t_{\text{silver}}$',
+>         "t_gold": '$t_{\text{gold}}$',
+>     }
+>     | to md --pretty
+> ```
