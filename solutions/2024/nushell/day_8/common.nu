@@ -20,3 +20,11 @@ export def "parse antennas" []: [
 
     { antennas: $antennas, w: $dimensions.w, h: $dimensions.h }
 }
+
+export def "pair-by" [col: cell-path]: [ table -> list<table> ] {
+    group-by $col | items { |_, v|
+        $v | enumerate | each { |vi|
+            $v | skip ($vi.index + 1) | each { |vj| [$vi.item, $vj] }
+        } | flatten
+    } | flatten
+}

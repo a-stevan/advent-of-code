@@ -1,15 +1,10 @@
-use ./common.nu [ "parse antennas" ]
+use ./common.nu [ "parse antennas", "pair-by" ]
 
 export def main []: [ string -> int ] {
     let parsed = $in | parse antennas
 
-    let pairs = $parsed.antennas | group-by frequency | items { |_, v|
-        $v | enumerate | each { |vi|
-            $v | skip ($vi.index + 1) | each { |vj| [$vi.item, $vj] }
-        } | flatten
-    } | flatten
-
-    let antinodes = $pairs
+    let antinodes = $parsed.antennas
+        | pair-by $.frequency
         | each {
             let dx = $in.0.x - $in.1.x
             let dy = $in.0.y - $in.1.y
