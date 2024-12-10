@@ -1,18 +1,9 @@
+use ./common.nu [ "parse antennas" ]
+
 export def main []: [ string -> int ] {
-    let grid = $in | lines | each { split chars }
+    let parsed = $in | parse antennas
 
-    let cells = $in | str replace --all "\n" '' | split chars
-    let dimensions = $in | lines | each { split chars } | { h: ($in | length), w: ($in.0 | length) }
-
-    let antennas = $cells
-        | enumerate
-        | where $it.item != '.'
-        | insert x { $in.index mod $dimensions.w }
-        | insert y { $in.index // $dimensions.w }
-        | reject index
-        | rename --column { item: antenna }
-
-    let pairs = $antennas | group-by antenna | items { |_, v|
+    let pairs = $parsed.antennas | group-by frequency | items { |_, v|
         $v | enumerate | each { |vi|
             $v | skip ($vi.index + 1) | each { |vj| [$vi.item, $vj] }
         } | flatten
@@ -31,7 +22,7 @@ export def main []: [ string -> int ] {
         | flatten
 
     $antinodes
-        | where $it.x >= 0 and $it.x < $dimensions.w and $it.y >= 0 and $it.y < $dimensions.h
+        | where $it.x >= 0 and $it.x < $parsed.w and $it.y >= 0 and $it.y < $parsed.h
         | uniq
         | length
 }
