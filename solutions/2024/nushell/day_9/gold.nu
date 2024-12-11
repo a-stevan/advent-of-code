@@ -46,6 +46,8 @@ export def main []: [ string -> int ] {
         let curr = $disk | get $it.1
         let prev = try { $disk | get ($it.1 - 1) } catch { null }
 
+        # print $"($prev | default ' ') -> ($curr | default ' '): ($it | update 0 { into int })"
+
         if $curr != null and $prev == null { {
             out: { start: $it.2, length: $it.3 },
             next: [ false, ($it.1 + 1), 0, 0 ],
@@ -63,13 +65,23 @@ export def main []: [ string -> int ] {
         }
         print --no-newline $"compacting disk: ($bar.1)         \r"
 
+        # print "round"
+        # print $bar.1
+        # print $bar.2
+
         let b = $blocks | get $bar.1
         let foo = $bar.2 | enumerate | where $it.item.length >= $b.length | get 0 --ignore-errors
         if $foo == null {
             return { next: ($bar | update 1 { $in - 1 }) }
         }
 
+        # $bar.0 | each { default '.' } | str join '' | print $in
+
+        # print $b
+        # print ($foo | te)
+
         let new_empty = if $foo.item.length == $b.length {
+            # print "skip"
             $bar.2 | drop nth $foo.index
         } else {
             $bar.2 | update $foo.index {
@@ -85,9 +97,18 @@ export def main []: [ string -> int ] {
                 $acc | update $it $bar.1
             }
 
+        # print $new_empty
+
+        # print ($b | te)
+        # print ($foo | te)
+
+        # print ""
+
         { next: [ $new_disk, ($bar.1 - 1), $new_empty ] }
     } [ $disk, ($blocks | length | $in - 1), $empty ] | get 0
     print ''
+
+    $compacted | each { default '.' } | str join '' | print $in
 
     $compacted | enumerate | where $it.item != null | each { $in.index * $in.item } | math sum
 }
