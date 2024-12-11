@@ -24,18 +24,24 @@ export def main []: [ string -> int ] {
         | get disk
     print ''
 
-    let compacted = generate { |d|
-        let empty = $d | enumerate | where $it.item == null | first | get index
-        let block = $d | enumerate | where $it.item != null | last | get index
+    let empty = $disk | enumerate | where $it.item == null | get index
+    let block = $disk | enumerate | where $it.item != null | get index
+    let compacted = generate { |it|
+        let e = $empty | get $it.1
+        let b = $block | get $it.2
+        print --no-newline $"compacting: ($e) - ($b)                 \r"
 
-        print $"($empty) ($block)"
-
-        if $empty > $block {
-            return { out: $d }
+        if $e > $b {
+            return { out: $it.0 }
         }
 
-        { next: ($d | update $empty ($d | get $block) | update $block null) }
-    } $disk | get 0
+        { next: [
+            ($it.0 | update $e ($it.0 | get $b) | update $b null),
+            ($it.1 + 1),
+            ($it.2 - 1),
+        ] }
+    } [$disk, 0, ($block | length | $in - 1)] | get 0
+    print ''
 
     $compacted | where $it != null | enumerate | each { $in.index * $in.item } | math sum
 }
