@@ -128,3 +128,34 @@ export def render []: [
     }
     | to md --pretty
 }
+
+export def cpu []: [
+    nothing -> record<
+        "Architecture": string,
+        "CPU(s)": string,
+        "Model name": string,
+        "Thread(s) per core": string,
+        "Core(s) per socket": string,
+        "Socket(s)": string,
+        "CPU max MHz": string,
+        "CPU min MHz": string,
+        "BogoMIPS": string,
+        "L1d cache": string,
+        "L1i cache": string,
+        "L2 cache": string,
+        "L3 cache": string,
+    >
+] {
+    ^lscpu
+        | lines
+        | parse "{k}: {v}"
+        | str trim
+        | where k !~ "Vuln"
+        | transpose --header-row
+        | into record
+        | select ...[
+            "Architecture", "CPU(s)", "Model name", "Thread(s) per core",
+            "Core(s) per socket", "Socket(s)", "CPU max MHz", "CPU min MHz",
+            "BogoMIPS", "L1d cache", "L1i cache", "L2 cache", "L3 cache"
+        ]
+}
