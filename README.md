@@ -52,88 +52,14 @@ to have it available as a `.asc` file.
 ### test solutions with the AoC API
 with Nushell,
 ```nushell
-use toolkit.nu
-use std assert
-
-use solutions/2024/nushell/day_1
-use solutions/2024/nushell/day_2
-use solutions/2024/nushell/day_3
-use solutions/2024/nushell/day_4
-use solutions/2024/nushell/day_5
-use solutions/2024/nushell/day_6
-use solutions/2024/nushell/day_7
-let sols = [
-    [ day, silver, gold ];
-
-    [ 1, { day_1 silver }, { day_1 gold } ],
-    [ 2, { day_2 silver }, { day_2 gold } ],
-    [ 3, { day_3 silver }, { day_3 gold } ],
-    [ 4, { day_4 silver }, { day_4 gold } ],
-    [ 5, { day_5 silver }, { day_5 gold } ],
-    [ 6, { day_6 silver }, { day_6 gold } ],
-    [ 7, { day_7 silver }, { day_7 gold } ],
-]
+use benchmarks/2024/nushell
 
 let login = {
     cookie: "xxxxxxxxxxxxxxxxxxxxxxxxxxxx"
     mail: "xxxx@xxx.xxx"
 }
-let inputs = $sols.day | enumerate | each { |d|
-    print --no-newline $"pulling inputs: day ($d.item) \(($d.index + 1) / ($sols | length)\)\r"
-    toolkit aoc get-data --login $login --year 2024 $d.item
-}
-print ""
-let answers = $sols.day | enumerate | each { |d|
-    print --no-newline $"pulling answers: day ($d.item) \(($d.index + 1) / ($sols | length)\)\r"
-    toolkit aoc get-answers --login $login --year 2024 $d.item
-}
-print ""
-
-def timeit [code: closure, ...args: any]: [ any -> record<res: any, time: duration> ] {
-    let start_time = date now
-
-    let res = $in | do $code ...$args
-
-    { res: $res, time: ((date now) - $start_time) }
-}
-
-let benchmarks = $inputs
-    | wrap input
-    | merge ($answers | wrap answers)
-    | merge ($sols | wrap sol)
-    | each { |day|
-        print $"running day ($day.sol.day) part silver..."
-        let silver = try {
-            let res = $day.input | timeit $day.sol.silver
-            let status = if $res.res == $day.answers.silver {
-                "pass"
-            } else {
-                "fail"
-            }
-            { status: $status, time: $res.time }
-        } catch { |e|
-            { status: $e.msg, time: null }
-        } | merge { day: $day.sol.day, part: "silver" }
-
-        if $day.answers.gold != null {
-            print $"running day ($day.sol.day) part gold... "
-            let gold = try {
-                let res = $day.input | timeit $day.sol.gold
-                let status = if $res.res == $day.answers.gold {
-                    "pass"
-                } else {
-                    "fail"
-                }
-                { status: $status, time: $res.time }
-            } catch { |e|
-                { status: $e.msg, time: null }
-            } | merge { day: $day.sol.day, part: "gold" }
-            return [$silver, $gold]
-        }
-
-        $silver
-    }
-    | flatten
+let inputs_and_answers = 1..7 | nushell pull --login $login
+let benchmarks = $inputs_and_answers | nushell run
 ```
 
 > **Note**
@@ -212,24 +138,5 @@ let benchmarks = $inputs
 >
 > to generate the table
 > ```nushell
-> $benchmarks
->     | update silver {
->         match $in {
->             "pass" => ":green_circle:",
->             "fail" => ":red_circle:",
->             null => ":orange_circle:",
->         }
->     }
->     | update gold {
->         match $in {
->             "pass" => ":green_circle:",
->             "fail" => ":red_circle:",
->             null => ":orange_circle:",
->         }
->     }
->     | rename --column {
->         "t_silver": '$t_{\text{silver}}$',
->         "t_gold": '$t_{\text{gold}}$',
->     }
->     | to md --pretty
+> $benchmarks | nushell render
 > ```
