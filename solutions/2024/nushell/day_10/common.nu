@@ -11,7 +11,7 @@ export def parse []: [
     }
 }
 
-export def trail [
+def trail [
     dimensions: record<w: int, h: int>,
     cells: list<int>,
 ]: [ record<x:int, y: int> -> list<table<x: int, y: int>> ] {
@@ -36,4 +36,20 @@ export def trail [
     }
 
     aux $in 1
+}
+
+
+export def compute-trails []: [
+    record<cells: list<int>, dimensions: record<w: int, h: int>>
+    -> list<table<x: int, y: int>>
+] {
+    let input = $in
+
+    $input.cells
+        | enumerate
+        | where $it.item == 0
+        | get index
+        | each {{ x: ($in mod $input.dimensions.w), y: ($in // $input.dimensions.w) }}
+        | each { trail $input.dimensions $input.cells }
+        | tee { describe | print }
 }
