@@ -31,7 +31,7 @@ let results = {
     results: ($inputs_and_answers | nushell run),
 }
 
-$results | save benchmarks/2024/nushell/a-stevan.nuon
+$results | to nuon -i 4 | save benchmarks/2024/nushell/a-stevan.nuon
 ```
 
 | day | silver         | $t_{\text{silver}}$           | gold            | $t_{\text{gold}}$             |
