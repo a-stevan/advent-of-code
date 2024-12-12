@@ -11,6 +11,8 @@ use ($ROOT | path join $NUSHELL day_4)
 use ($ROOT | path join $NUSHELL day_5)
 use ($ROOT | path join $NUSHELL day_6)
 use ($ROOT | path join $NUSHELL day_7)
+use ($ROOT | path join $NUSHELL day_8)
+use ($ROOT | path join $NUSHELL day_9)
 
 def timeit [code: closure, ...args: any]: [ any -> record<res: any, time: duration> ] {
     let start_time = date now
@@ -57,6 +59,8 @@ export def run []: [
         [ 5, { day_5 silver }, { day_5 gold } ],
         [ 6, { day_6 silver }, { day_6 gold } ],
         [ 7, { day_7 silver }, { day_7 gold } ],
+        [ 8, { day_8 silver }, { day_8 gold } ],
+        [ 9, { day_9 silver }, { day_9 gold } ],
     ]
 
     $in | join $days day | each { |it|
