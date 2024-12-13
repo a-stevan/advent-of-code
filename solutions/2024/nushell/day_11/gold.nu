@@ -1,3 +1,5 @@
+use ./common.nu [ parse, solve ]
+
 export def main []: [ string -> int ] {
-    0
+    parse | solve --nb-blinks 75
 }
